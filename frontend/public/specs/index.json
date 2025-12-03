@@ -1,0 +1,85 @@
+{
+  "items": [
+    {
+      "id": "M01",
+      "keys": [
+        "Advanced Gynaecological Examination Model",
+        "Advanced Gynecological Examination Model",
+        "Gynaecological Examination Model",
+        "Gynecological Examination Model",
+        "M01",
+        "gynae exam",
+        "model:m01"
+      ],
+      "title": "Advanced Gynaecological Examination Model — M01",
+      "html": "<ul><li> Life-size female pelvis with realistic cervix and vaginal canal</li><li> Speculum insertion &amp; Pap smear practice</li><li> Bimanual &amp; rectovaginal examination landmarks</li><li> Replaceable cervix modules (normal, erosion, polyp)</li><li> Carry case included</li></ul>"
+    },
+    {
+      "id": "M02",
+      "keys": [
+        "Advanced Childbirth Comprehensive skills Training Model",
+        "Childbirth Comprehensive skills Training Model",
+        "Comprehensive childbirth model",
+        "M02",
+        "childbirth training",
+        "model:m02"
+      ],
+      "title": "Advanced Childbirth Comprehensive Skills Training Model — M02",
+      "html": "<ul><li> Stages of labor with palpation landmarks</li><li> Assisted delivery (forceps/vacuum) practice</li><li> Newborn immediate care scenarios</li><li> Replaceable perineal repair pads</li><li> Sturdy storage &amp; transport case</li></ul>"
+    },
+    {
+      "id": "M03",
+      "keys": [
+        "Advanced Childbirth Comprehensive skills Training Model",
+        "Comprehensive childbirth model",
+        "M03",
+        "childbirth training",
+        "model:m03"
+      ],
+      "title": "Advanced Childbirth Comprehensive Skills Training Model — M03",
+      "html": "<ul><li> Normal &amp; assisted delivery practice (forceps/vacuum)</li><li> Fetal position palpation &amp; rotation</li><li> PPH management &amp; uterine massage drills</li><li> Episiotomy &amp; perineal repair pads</li><li> Maternal &amp; neonatal resuscitation workflow</li></ul>"
+    },
+    {
+      "id": "M04",
+      "keys": ["Neonatal Resuscitation Trainer", "NRP Trainer", "M04", "model:m04"],
+      "title": "Neonatal Resuscitation Trainer — M04",
+      "html": "<ul><li> Airway management with visible chest rise</li><li> Bag-mask ventilation with feedback</li><li> Umbilical catheterization site</li><li> Realistic skin and landmarks</li><li> Prepared for team-based scenarios</li></ul>"
+    },
+    {
+      "id": "M05",
+      "keys": ["IV Arm", "Intravenous Training Arm", "Cannulation Arm", "M05", "model:m05"],
+      "title": "Intravenous Training Arm — M05",
+      "html": "<ul><li> Multiple palpable veins for cannulation</li><li> Flashback of simulated blood</li><li> Durable skin for repeated practice</li><li> Replaceable veins &amp; skin sleeves</li><li> Carry case included</li></ul>"
+    },
+    {
+      "id": "M06",
+      "keys": ["ECG Simulator", "Cardiac Rhythm Simulator", "M06", "model:m06"],
+      "title": "ECG/Cardiac Rhythm Simulator — M06",
+      "html": "<ul><li> Selectable rhythms &amp; scenarios</li><li> Defib &amp; pacing compatible (training)</li><li> 12-lead output</li><li> Battery &amp; mains operation</li><li> Instructor remote controls</li></ul>"
+    },
+    {
+      "id": "M07",
+      "keys": ["Airway Management Trainer", "AMT", "M07", "model:m07"],
+      "title": "Adult Airway Management Trainer — M07",
+      "html": "<ul><li> Oral &amp; nasal intubation</li><li> Sellick maneuver &amp; tongue edema options</li><li> Realistic laryngoscopy landmarks</li><li> LMA &amp; supraglottic device practice</li><li> Teeth &amp; dental damage feedback</li></ul>"
+    },
+    {
+      "id": "M08",
+      "keys": ["Laparoscopic Trainer", "Box Trainer", "M08", "model:m08"],
+      "title": "Basic Laparoscopic Box Trainer — M08",
+      "html": "<ul><li> High-definition camera with adjustable angles</li><li> Interchangeable task boards</li><li> Ergonomic trocar ports</li><li> Software for time/accuracy scoring</li><li> Compact foldable frame</li></ul>"
+    },
+    {
+      "id": "M09",
+      "keys": ["CPR Manikin", "BLS Manikin", "M09", "model:m09"],
+      "title": "Adult CPR/BLS Manikin with Feedback — M09",
+      "html": "<ul><li> Real-time depth &amp; rate feedback</li><li> Head tilt-chin lift &amp; jaw thrust</li><li> Replaceable lungs/airways</li><li> Durable torsos for repeated compressions</li><li> App/monitor connectivity</li></ul>"
+    },
+    {
+      "id": "M10",
+      "keys": ["Defibrillator Trainer", "AED Trainer", "M10", "model:m10"],
+      "title": "AED/Defibrillator Trainer — M10",
+      "html": "<ul><li> Pre-programmed training scenarios</li><li> Voice prompts &amp; metronome</li><li> Reusable training pads</li><li> Child/adult modes</li><li> Remote control for instructors</li></ul>"
+    }
+  ]
+}
