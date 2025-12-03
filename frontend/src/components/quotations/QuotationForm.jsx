@@ -12,6 +12,7 @@ const QuotationForm = ({ initialQuotation, defaultCompanyCode = "" }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // if coming from modal via location.state
   const stateCompanyCode =
     location.state?.selectedCompanyCode || location.state?.companyCode;
 
@@ -54,6 +55,7 @@ const QuotationForm = ({ initialQuotation, defaultCompanyCode = "" }) => {
   const quotationNumber = watch("quotationNumber");
   const companyCode = watch("companyCode");
 
+  // ensure form has companyCode from navigation/state on mount
   React.useEffect(() => {
     if (effectiveCompanyCode && !companyCode) {
       setValue("companyCode", effectiveCompanyCode);
@@ -61,20 +63,38 @@ const QuotationForm = ({ initialQuotation, defaultCompanyCode = "" }) => {
   }, [effectiveCompanyCode, companyCode, setValue]);
 
   const onSubmit = async (values) => {
+    // final company code: static + safe
     const finalCompanyCode =
       values.companyCode || effectiveCompanyCode || "BRBIO";
     const cfg = getCompanyConfig(finalCompanyCode);
+
+    const rawItems = values.items || [];
+
+    // 🔹 filter out fully empty rows
+    const nonEmptyItems = rawItems.filter(
+      (it) => it.description && it.quantity && it.unitPrice
+    );
+
+    // 🔹 must have at least one proper line
+    if (nonEmptyItems.length === 0) {
+      alert(
+        "Please add at least one item with Description, Qty and Unit Price before saving the quotation."
+      );
+      return;
+    }
+
+    const mappedItems = nonEmptyItems.map((it) => ({
+      ...it,
+      quantity: Number(it.quantity) || 0,
+      unitPrice: Number(it.unitPrice) || 0,
+      gstPercent: Number(it.gstPercent) || 0,
+    }));
 
     const payload = {
       ...values,
       companyCode: finalCompanyCode,
       companyName: cfg.name,
-      items: items.map((it) => ({
-        ...it,
-        quantity: Number(it.quantity) || 0,
-        unitPrice: Number(it.unitPrice) || 0,
-        gstPercent: Number(it.gstPercent) || 0,
-      })),
+      items: mappedItems,
       totals,
     };
 
@@ -326,6 +346,13 @@ const QuotationForm = ({ initialQuotation, defaultCompanyCode = "" }) => {
                   )}
                 </div>
 
+                {/* HSN – to match PO layout */}
+                <input
+                  {...register(`items.${index}.hsn`)}
+                  placeholder="HSN"
+                  className="p-2 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+
                 {/* Qty */}
                 <input
                   type="number"
@@ -411,7 +438,7 @@ const QuotationForm = ({ initialQuotation, defaultCompanyCode = "" }) => {
           </Button>
         </div>
 
-        {/* Totals – same look as PO */}
+        {/* Totals – same look as PO (neutral text) */}
         <div className="mt-4 text-sm flex flex-col items-end gap-1 border-t pt-3">
           <p>
             <strong>Subtotal:</strong> ₹{totals.subTotal.toFixed(2)}

@@ -1,4 +1,3 @@
-// frontend/src/components/purchaseOrders/PurchaseOrderForm.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { usePurchaseOrderForm } from "../../hooks/usePurchaseOrderForm";

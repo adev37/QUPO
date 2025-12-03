@@ -107,7 +107,7 @@ const MainLayout = () => {
         </header>
 
         {/* CONTENT */}
-        <main className="flex-1 overflow-y-auto px-6 py-5 bg-slate-50">
+        <main className="flex-1 px-6 py-5 bg-slate-50">
           <Outlet />
         </main>
       </div>
