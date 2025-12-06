@@ -1,42 +1,57 @@
 // frontend/src/config/companyConfig.js
 
-// Import your branding assets
-import brHeader from "../assets/images/br.jpg";       // full-width letterhead image
-import brStamp from "../assets/images/br_stamp.png";      // stamp / signature image
+// ==== IMPORT ALL COMPANY ASSETS ====
 
-// 🔥 Common details for ALL companies
-const COMMON_DETAILS = {
-  headerImage: brHeader,
-  stampImage: brStamp,
+// BR Biomedical
+import brHeader from "../assets/images/logo_br.jpg";
+import brStamp from "../assets/images/br_stamp.png";
 
-  address: "D-71, MALVIYA NAGAR, NEW DELHI, South Delhi, Delhi, 110017",
-  contact: "18002124669",
-  email: "sales@brbiomedical.com",
-  gstin: "07AACCB9500D1Z4",
-};
+// Hanuman Healthcare
+import hanumanHeader from "../assets/images/logo_hanuman.jpg";
+import hanumanStamp from "../assets/images/hanuman_stamp.png";
 
-// Company definitions (all share the common details)
+// Vego & Thomson
+import vegoHeader from "../assets/images/logo_vego.png";
+import vegoStamp from "../assets/images/vego.jpg"; // or vego_stamp if you add one
+
+
+// ==== COMPANY CONFIG ====
 export const COMPANY_CONFIGS = {
   BRBIO: {
     code: "BRBIO",
     name: "BR Biomedical (P) Ltd.",
-    ...COMMON_DETAILS,
+    headerImage: brHeader,
+    stampImage: brStamp,
+    address: "D-71, MALVIYA NAGAR, NEW DELHI, South Delhi, Delhi, 110017",
+    contact: "18002124669",
+    email: "sales@brbiomedical.com",
+    gstin: "07AACCB9500D1Z4",
   },
 
   HANUMAN: {
     code: "HANUMAN",
     name: "Hanuman HealthCare",
-    ...COMMON_DETAILS,
+    headerImage: hanumanHeader,
+    stampImage: hanumanStamp,
+    address: "D-71, MALVIYA NAGAR, NEW DELHI, South Delhi, Delhi, 110017",
+    contact: "18002124669",
+    email: "sales@brbiomedical.com",
+    gstin: "07AACCB9500D1Z4",
   },
 
   VEGO: {
     code: "VEGO",
     name: "Vego & Thomson Pvt Ltd",
-    ...COMMON_DETAILS,
+    headerImage: vegoHeader,
+    stampImage: vegoStamp,
+    address: "D-71, MALVIYA NAGAR, NEW DELHI, South Delhi, Delhi, 110017",
+    contact: "18002124669",
+    email: "sales@brbiomedical.com",
+    gstin: "07AACCB9500D1Z4",
   },
 };
 
-// Getter function used across frontend
+// ==== GETTER ====
 export const getCompanyConfig = (code) => {
   if (!code) return COMPANY_CONFIGS.BRBIO;
   const key = code.toString().trim().toUpperCase();

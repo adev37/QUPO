@@ -4,6 +4,69 @@ import Client from "../models/Client.js";
 import { getNextNumber } from "../helpers/autoNumberHelper.js";
 import { getOrCreateCompanyByCode } from "../helpers/companyHelper.js";
 
+/**
+ * Helper: normalize and compute line items for a quotation
+ */
+const mapQuotationItems = (items = []) => {
+  const safeItems = items.filter((i) => {
+    const qty = Number(i.quantity) || 0;
+    const price = Number(i.unitPrice ?? i.price ?? 0);
+    return i.description && qty > 0 && price > 0;
+  });
+
+  return safeItems.map((item) => {
+    const quantity = Number(item.quantity) || 0;
+    const price = Number(item.unitPrice ?? item.price ?? 0);
+    const gst = Number(item.gstPercent ?? item.gst ?? 0);
+
+    const gstAmount = (quantity * price * gst) / 100;
+    const totalAmount = quantity * price + gstAmount;
+
+    return {
+      description: item.description || "",
+      model: item.modelNo || item.model || "",
+      hsn: item.hsn || "",
+      quantity,
+      unit: item.unit || "PCS",
+      price,
+      gst,
+      gstAmount,
+      totalAmount,
+      hasFeature: !!item.hasFeature,
+      feature: item.feature || "",
+    };
+  });
+};
+
+/**
+ * Helper: compute totals
+ */
+const computeTotals = (mappedItems, overrideTotals) => {
+  if (overrideTotals) {
+    const subTotal = Number(overrideTotals.subTotal) || 0;
+    const totalGST = Number(overrideTotals.totalGST) || 0;
+    const grandTotal =
+      Number(overrideTotals.grandTotal) || subTotal + totalGST;
+
+    return { subTotal, totalGST, grandTotal };
+  }
+
+  const subTotal = mappedItems.reduce(
+    (acc, item) => acc + item.quantity * item.price,
+    0
+  );
+  const totalGST = mappedItems.reduce(
+    (acc, item) => acc + item.gstAmount,
+    0
+  );
+  const grandTotal = subTotal + totalGST;
+
+  return { subTotal, totalGST, grandTotal };
+};
+
+/**
+ * POST /api/quotations
+ */
 export const createQuotation = async (req, res, next) => {
   try {
     const {
@@ -18,10 +81,10 @@ export const createQuotation = async (req, res, next) => {
       clientGSTIN,
       items,
       terms,
-      totals, // coming from frontend (optional)
+      totals, // optional override from frontend
     } = req.body;
 
-    // ---- COMPANY ----
+    // ---- COMPANY (static helper like PO) ----
     const company = await getOrCreateCompanyByCode(companyCode);
     if (!company) {
       res.status(400);
@@ -43,59 +106,19 @@ export const createQuotation = async (req, res, next) => {
     }
 
     // ---- ITEMS ----
-    const safeItems = (items || []).filter((i) => {
-      const qty = Number(i.quantity) || 0;
-      const price = Number(i.unitPrice ?? i.price ?? 0);
-      return i.description && qty > 0 && price > 0;
-    });
-
-    const mappedItems = safeItems.map((item) => {
-      const quantity = Number(item.quantity) || 0;
-      const price = Number(item.unitPrice ?? item.price ?? 0);
-      const gst = Number(item.gstPercent ?? item.gst ?? 0);
-
-      const gstAmount = (quantity * price * gst) / 100;
-      const totalAmount = quantity * price + gstAmount;
-
-      return {
-        description: item.description || "",
-        model: item.modelNo || item.model || "",
-        hsn: item.hsn || "",
-        quantity,
-        unit: item.unit || "PCS",
-        price,
-        gst,
-        gstAmount,
-        totalAmount,
-        hasFeature: !!item.hasFeature,
-        feature: item.feature || "",
-      };
-    });
+    const mappedItems = mapQuotationItems(items);
 
     // ---- TOTALS ----
-    let subTotal, totalGST, grandTotal;
-
-    if (totals) {
-      subTotal = Number(totals.subTotal) || 0;
-      totalGST = Number(totals.totalGST) || 0;
-      grandTotal = Number(totals.grandTotal) || subTotal + totalGST;
-    } else {
-      subTotal = mappedItems.reduce(
-        (acc, item) => acc + item.quantity * item.price,
-        0
-      );
-      totalGST = mappedItems.reduce(
-        (acc, item) => acc + item.gstAmount,
-        0
-      );
-      grandTotal = subTotal + totalGST;
-    }
+    const { subTotal, totalGST, grandTotal } = computeTotals(
+      mappedItems,
+      totals
+    );
 
     const quotationNumber = await getNextNumber("quotation");
 
     const quotation = await Quotation.create({
       company: company._id,
-      companyCode: company.companyCode, // normalized code
+      companyCode: company.companyCode, // normalized code (BRBIO / HANUMAN / VEGO)
       quotationNumber,
       date,
       validUntil,
@@ -127,6 +150,9 @@ export const createQuotation = async (req, res, next) => {
   }
 };
 
+/**
+ * PUT /api/quotations/:id
+ */
 export const updateQuotation = async (req, res, next) => {
   try {
     const quotation = await Quotation.findById(req.params.id);
@@ -176,53 +202,13 @@ export const updateQuotation = async (req, res, next) => {
     }
 
     // ---- ITEMS ----
-    const safeItems = (items || []).filter((i) => {
-      const qty = Number(i.quantity) || 0;
-      const price = Number(i.unitPrice ?? i.price ?? 0);
-      return i.description && qty > 0 && price > 0;
-    });
+    const mappedItems = mapQuotationItems(items);
+    const { subTotal, totalGST, grandTotal } = computeTotals(
+      mappedItems,
+      totals
+    );
 
-    const mappedItems = safeItems.map((item) => {
-      const quantity = Number(item.quantity) || 0;
-      const price = Number(item.unitPrice ?? item.price ?? 0);
-      const gst = Number(item.gstPercent ?? item.gst ?? 0);
-
-      const gstAmount = (quantity * price * gst) / 100;
-      const totalAmount = quantity * price + gstAmount;
-
-      return {
-        description: item.description || "",
-        model: item.modelNo || item.model || "",
-        hsn: item.hsn || "",
-        quantity,
-        unit: item.unit || "PCS",
-        price,
-        gst,
-        gstAmount,
-        totalAmount,
-        hasFeature: !!item.hasFeature,
-        feature: item.feature || "",
-      };
-    });
-
-    let subTotal, totalGST, grandTotal;
-
-    if (totals) {
-      subTotal = Number(totals.subTotal) || 0;
-      totalGST = Number(totals.totalGST) || 0;
-      grandTotal = Number(totals.grandTotal) || subTotal + totalGST;
-    } else {
-      subTotal = mappedItems.reduce(
-        (acc, item) => acc + item.quantity * item.price,
-        0
-      );
-      totalGST = mappedItems.reduce(
-        (acc, item) => acc + item.gstAmount,
-        0
-      );
-      grandTotal = subTotal + totalGST;
-    }
-
+    // ---- ASSIGN FIELDS ----
     quotation.date = date ?? quotation.date;
     quotation.validUntil = validUntil ?? quotation.validUntil;
     quotation.subject = subject ?? quotation.subject;
@@ -251,6 +237,9 @@ export const updateQuotation = async (req, res, next) => {
   }
 };
 
+/**
+ * GET /api/quotations
+ */
 export const getQuotations = async (req, res, next) => {
   try {
     const { search, companyCode } = req.query;
@@ -280,6 +269,9 @@ export const getQuotations = async (req, res, next) => {
   }
 };
 
+/**
+ * GET /api/quotations/:id
+ */
 export const getQuotationById = async (req, res, next) => {
   try {
     const quotation = await Quotation.findById(req.params.id).populate(
@@ -296,6 +288,9 @@ export const getQuotationById = async (req, res, next) => {
   }
 };
 
+/**
+ * DELETE /api/quotations/:id
+ */
 export const deleteQuotation = async (req, res, next) => {
   try {
     const deleted = await Quotation.findByIdAndDelete(req.params.id);
