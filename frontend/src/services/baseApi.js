@@ -1,14 +1,15 @@
 // frontend/src/services/baseApi.js
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "https://qupo-api.vercel.app/api";
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseUrl: API_BASE_URL,
   prepareHeaders: (headers, { getState }) => {
-    // 1) try Redux state
     const state = getState();
     let token = state?.auth?.token;
 
-    // 2) fallback to localStorage (for hard refresh / direct open)
     if (!token) {
       try {
         const raw = localStorage.getItem("auth");
@@ -21,7 +22,6 @@ const baseQuery = fetchBaseQuery({
       }
     }
 
-    // 3) final fallback if something still uses qp_token
     if (!token) {
       token = localStorage.getItem("qp_token");
     }

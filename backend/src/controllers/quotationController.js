@@ -1,8 +1,8 @@
 // backend/src/controllers/quotationController.js
 import Quotation from "../models/Quotation.js";
-import Company from "../models/Company.js";
 import Client from "../models/Client.js";
 import { getNextNumber } from "../helpers/autoNumberHelper.js";
+import { getOrCreateCompanyByCode } from "../helpers/companyHelper.js";
 
 export const createQuotation = async (req, res, next) => {
   try {
@@ -22,7 +22,7 @@ export const createQuotation = async (req, res, next) => {
     } = req.body;
 
     // ---- COMPANY ----
-    const company = await Company.findOne({ companyCode });
+    const company = await getOrCreateCompanyByCode(companyCode);
     if (!company) {
       res.status(400);
       throw new Error("Invalid companyCode");
@@ -43,7 +43,6 @@ export const createQuotation = async (req, res, next) => {
     }
 
     // ---- ITEMS ----
-    // Frontend sends: description, quantity, unitPrice, gstPercent, hasFeature, feature
     const safeItems = (items || []).filter((i) => {
       const qty = Number(i.quantity) || 0;
       const price = Number(i.unitPrice ?? i.price ?? 0);
@@ -96,7 +95,7 @@ export const createQuotation = async (req, res, next) => {
 
     const quotation = await Quotation.create({
       company: company._id,
-      companyCode,
+      companyCode: company.companyCode, // normalized code
       quotationNumber,
       date,
       validUntil,
@@ -153,13 +152,13 @@ export const updateQuotation = async (req, res, next) => {
 
     // ---- COMPANY ----
     if (companyCode) {
-      const company = await Company.findOne({ companyCode });
+      const company = await getOrCreateCompanyByCode(companyCode);
       if (!company) {
         res.status(400);
         throw new Error("Invalid companyCode");
       }
       quotation.company = company._id;
-      quotation.companyCode = companyCode;
+      quotation.companyCode = company.companyCode;
     }
 
     // ---- CLIENT ----

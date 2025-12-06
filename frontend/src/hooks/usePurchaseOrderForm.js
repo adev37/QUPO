@@ -2,7 +2,9 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { getCompanyConfig } from "../config/companyConfig";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL =
+  import.meta.env.VITE_API_URL || "https://qupo-api.vercel.app/api";
+
 
 const getAuthToken = () => {
   try {

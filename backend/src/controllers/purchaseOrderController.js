@@ -1,8 +1,8 @@
 // backend/src/controllers/purchaseOrderController.js
 import PurchaseOrder from "../models/PurchaseOrder.js";
-import Company from "../models/Company.js";
 import SalesManager from "../models/SalesManager.js";
 import { getNextNumber } from "../helpers/autoNumberHelper.js";
+import { getOrCreateCompanyByCode } from "../helpers/companyHelper.js";
 
 export const createPurchaseOrder = async (req, res, next) => {
   try {
@@ -25,12 +25,14 @@ export const createPurchaseOrder = async (req, res, next) => {
       deliverySchedule,
     } = req.body;
 
-    const company = await Company.findOne({ companyCode });
+    // ---- COMPANY ----
+    const company = await getOrCreateCompanyByCode(companyCode);
     if (!company) {
       res.status(400);
       throw new Error("Invalid companyCode");
     }
 
+    // ---- SALES MANAGER ----
     let salesManager = null;
     if (Email) {
       salesManager =
@@ -44,9 +46,11 @@ export const createPurchaseOrder = async (req, res, next) => {
         }));
     }
 
+    // ---- ITEMS ----
     const safeItems = (items || []).filter(
       (i) => i.description && i.quantity && i.price
     );
+
     const mappedItems = safeItems.map((item) => {
       const quantity = Number(item.quantity) || 0;
       const price = Number(item.price) || 0;
@@ -71,7 +75,7 @@ export const createPurchaseOrder = async (req, res, next) => {
 
     const po = await PurchaseOrder.create({
       company: company._id,
-      companyCode,
+      companyCode: company.companyCode,
       purchaseNumber: poNumber,
       date,
       orderAgainst,
@@ -127,16 +131,18 @@ export const updatePurchaseOrder = async (req, res, next) => {
       deliverySchedule,
     } = req.body;
 
+    // ---- COMPANY ----
     if (companyCode) {
-      const company = await Company.findOne({ companyCode });
+      const company = await getOrCreateCompanyByCode(companyCode);
       if (!company) {
         res.status(400);
         throw new Error("Invalid companyCode");
       }
       po.company = company._id;
-      po.companyCode = companyCode;
+      po.companyCode = company.companyCode;
     }
 
+    // ---- SALES MANAGER ----
     let salesManager = po.salesManager;
     if (Email) {
       const existing =
@@ -151,9 +157,11 @@ export const updatePurchaseOrder = async (req, res, next) => {
       salesManager = existing._id;
     }
 
+    // ---- ITEMS ----
     const safeItems = (items || []).filter(
       (i) => i.description && i.quantity && i.price
     );
+
     const mappedItems = safeItems.map((item) => {
       const quantity = Number(item.quantity) || 0;
       const price = Number(item.price) || 0;
@@ -173,6 +181,7 @@ export const updatePurchaseOrder = async (req, res, next) => {
     );
     const grandTotal = subTotal + totalGST;
 
+    // ---- ASSIGN FIELDS ----
     po.date = date || po.date;
     po.purchaseNumber = purchaseNumber || po.purchaseNumber;
     po.orderAgainst = orderAgainst;
