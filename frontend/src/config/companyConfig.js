@@ -1,7 +1,7 @@
 // frontend/src/config/companyConfig.js
 
 // Import your branding assets
-import brHeader from "../assets/images/logobr.jpg";       // full-width letterhead image
+import brHeader from "../assets/images/br.jpg";       // full-width letterhead image
 import brStamp from "../assets/images/br_stamp.png";      // stamp / signature image
 
 // 🔥 Common details for ALL companies
