@@ -1,0 +1,47 @@
+/* frontend/src/styles/index.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+/* everything uses border-box */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  /* anything with .no-print will not be printed */
+  .no-print,
+  .no-print * {
+    display: none !important;
+  }
+
+  /* our A4 wrapper */
+  #print-root {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: auto !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 15mm 15mm 20mm 15mm;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

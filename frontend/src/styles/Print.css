@@ -1,0 +1,35 @@
+/* --- PRINT UTILITIES FOR QUOTATION --- */
+@media print {
+  .no-print {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  .print\:table-header-group {
+    display: table-header-group !important;
+  }
+
+  .print\:table-footer-group {
+    display: table-footer-group !important;
+  }
+
+  .specs-html ul {
+    list-style: disc;
+    padding-left: 18px;
+    margin: 0;
+  }
+
+  .specs-html li {
+    margin: 0;
+  }
+
+  .client-box p {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
