@@ -96,7 +96,7 @@ const Sidebar = () => {
                 }`
               }
             >
-              Sales Managers
+              Supplier/Sales Manager
             </NavLink>
 
             {/* ✅ Admin-only Users link */}

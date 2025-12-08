@@ -84,7 +84,7 @@ function SalesManagerForm({ initialValues, onSubmit, onCancel, loading }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="sm:col-span-2">
           <label className="block text-xs font-medium text-slate-700 mb-1">
-            Sales Manager Name <span className="text-red-500">*</span>
+            Sales/Supplier Name <span className="text-red-500">*</span>
           </label>
           <input
             name="name"
@@ -273,7 +273,7 @@ const SalesManagersPage = () => {
           onClick={openCreateModal}
           className="inline-flex items-center px-3 py-1.5 rounded-md bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700"
         >
-          + Add Sales Manager
+          + Add Supplier/Sales Manager
         </button>
       </div>
 
@@ -437,7 +437,7 @@ const SalesManagersPage = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        title={selectedManager ? "Edit Sales Manager" : "Add Sales Manager"}
+        title={selectedManager ? "Edit Supplier/Sales" : "Add Supplier/Sales"}
       >
         <SalesManagerForm
           initialValues={selectedManager}
