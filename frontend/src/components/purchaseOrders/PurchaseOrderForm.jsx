@@ -304,7 +304,7 @@ const PurchaseOrderForm = ({
               </label>
               <input
                 {...register("SalesManagerName")}
-                placeholder="Sales Manager Name"
+                placeholder="Supplier/Sales Manager Name"
                 required
                 className="w-full p-2 border rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                 onChange={(e) => handleManagerNameChange(e.target.value)}
