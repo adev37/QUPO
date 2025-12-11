@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 
-// ✅ Use the same name as in other hooks/services
 const API_URL =
   import.meta.env.VITE_API_URL || "https://qupo-api.vercel.app/api";
-
 
 const norm = (v) => (v || "").toString().trim();
 
@@ -30,21 +28,17 @@ export const useQuotationForm = (
     return {
       companyCode: q.companyCode || defaultCompanyCode || "BRBIO",
       companyName: q.companyName || q.company?.name || "",
-
       date: q.date
         ? q.date.slice(0, 10)
         : new Date().toISOString().slice(0, 10),
       validUntil: q.validUntil ? q.validUntil.slice(0, 10) : "",
       quotationNumber: q.quotationNumber || "",
-
       clientName: q.clientName || "",
       clientEmail: q.clientEmail || "",
       clientContact: q.clientContact || "",
       clientGSTIN: q.clientGSTIN || "",
       clientAddress: q.clientAddress || "",
-
       subject: q.subject || "",
-
       items:
         q.items?.length > 0
           ? q.items.map((it) => ({
@@ -69,7 +63,6 @@ export const useQuotationForm = (
                 feature: "",
               },
             ],
-
       terms: q.terms || "",
     };
   };
@@ -90,7 +83,6 @@ export const useQuotationForm = (
     name: "items",
   });
 
-  // ---------- ITEM SUGGESTIONS ----------
   const [itemSuggestions, setItemSuggestions] = useState({});
 
   const handleItemDescriptionChange = async (index, value) => {
@@ -135,7 +127,6 @@ export const useQuotationForm = (
         item.price ?? item.unitPrice ?? 0
       );
     }
-
     if (!currentGstPercent) {
       setValue(
         `items.${index}.gstPercent`,
@@ -146,7 +137,6 @@ export const useQuotationForm = (
     setItemSuggestions((prev) => ({ ...prev, [index]: [] }));
   };
 
-  // ---------- CLIENT SUGGESTIONS ----------
   const [clientSuggestions, setClientSuggestions] = useState([]);
   const [isClientNameFocused, setIsClientNameFocused] = useState(false);
   const clientNameWrapperRef = useRef(null);
@@ -208,7 +198,6 @@ export const useQuotationForm = (
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ---------- TERMS ----------
   const termsList = [
     "PRICES: The prices are expressed on F.O.R. basis in INR.",
     "GST & OTHER TAXES: GST as applicable shall be charged extra.",
@@ -250,7 +239,6 @@ export const useQuotationForm = (
     setValue("terms", updated);
   };
 
-  // ---------- TOTALS ----------
   const items = watch("items");
 
   const totals = useMemo(() => {
@@ -277,7 +265,6 @@ export const useQuotationForm = (
     };
   }, [items]);
 
-  // ---------- RESET ON EDIT ----------
   useEffect(() => {
     if (!initialQuotation) return;
     reset(buildDefaults(initialQuotation));

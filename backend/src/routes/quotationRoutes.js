@@ -12,10 +12,8 @@ import { requirePermission } from "../middleware/permissionMiddleware.js";
 
 const router = express.Router();
 
-// /api/quotations
 router
   .route("/")
-  // ⬇ NOW ALSO REQUIRES canCreateQuotation TO VIEW THE LIST
   .get(protect, requirePermission("canCreateQuotation"), getQuotations)
   .post(
     protect,
@@ -23,10 +21,8 @@ router
     createQuotation
   );
 
-// /api/quotations/:id
 router
   .route("/:id")
-  // ⬇ NOW ALSO REQUIRES canCreateQuotation TO VIEW SINGLE QUOTATION
   .get(
     protect,
     requirePermission("canCreateQuotation"),

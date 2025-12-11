@@ -12,10 +12,8 @@ import { requirePermission } from "../middleware/permissionMiddleware.js";
 
 const router = express.Router();
 
-// /api/purchase-orders
 router
   .route("/")
-  // ⬇ NOW ALSO REQUIRES canCreatePurchaseOrder TO VIEW THE LIST
   .get(
     protect,
     requirePermission("canCreatePurchaseOrder"),
@@ -27,10 +25,8 @@ router
     createPurchaseOrder
   );
 
-// /api/purchase-orders/:id
 router
   .route("/:id")
-  // ⬇ NOW ALSO REQUIRES canCreatePurchaseOrder TO VIEW SINGLE PO
   .get(
     protect,
     requirePermission("canCreatePurchaseOrder"),

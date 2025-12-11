@@ -1,11 +1,10 @@
+// e.g. frontend/src/hooks/usePurchaseOrderForm.js
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { getCompanyConfig } from "../config/companyConfig";
 
 const API_URL =
-  import.meta.env.VITE_API_URL || "https://qupo-api.vercel.app/api";
-
-
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const getAuthToken = () => {
   try {
@@ -56,16 +55,11 @@ export const usePurchaseOrderForm = (
     initialPurchaseOrder?.companyCode || defaultCompanyCode || "BRBIO";
   const cfg = getCompanyConfig(initialCode);
 
-  // helper to build consistent default values for create + edit
   const buildDefaults = (source) => {
     const po = source || {};
     return {
-      // Company selection
       companyCode: po.companyCode || initialCode,
-
-      // Bill To company details – prefill from existing PO or companyConfig
-      companyName:
-        po.companyName || po.company?.name || cfg.name || "",
+      companyName: po.companyName || po.company?.name || cfg.name || "",
       companyAddress:
         po.companyAddress || po.company?.address || cfg.address || "",
       companyContact:
@@ -74,8 +68,6 @@ export const usePurchaseOrderForm = (
         po.companyEmail || po.company?.email || cfg.email || "",
       companyGSTIN:
         po.companyGSTIN || po.company?.gstin || cfg.gstin || "",
-
-      // PO details
       date: po.date
         ? po.date.slice(0, 10)
         : new Date().toISOString().slice(0, 10),
@@ -83,15 +75,11 @@ export const usePurchaseOrderForm = (
       orderAgainst: po.orderAgainst || "",
       deliveryPeriod: po.deliveryPeriod || "",
       placeInstallation: po.placeInstallation || "",
-
-      // Supplier / Sales Manager block
       SalesManagerName: po.SalesManagerName || "",
       managerAddress: po.managerAddress || "",
       managerContact: po.managerContact || "",
       managerEmail: po.managerEmail || "",
       managerGSTIN: po.managerGSTIN || "",
-
-      // Items
       items:
         po.items?.length > 0
           ? po.items.map((it) => ({
@@ -116,8 +104,6 @@ export const usePurchaseOrderForm = (
                 feature: "",
               },
             ],
-
-      // Terms
       terms: po.terms || DEFAULT_TERMS,
     };
   };
@@ -138,7 +124,6 @@ export const usePurchaseOrderForm = (
     name: "items",
   });
 
-  // ---------- ITEM SUGGESTIONS (like quotation) ----------
   const [itemSuggestions, setItemSuggestions] = useState({});
 
   const handleItemDescriptionChange = async (index, value) => {
@@ -170,12 +155,10 @@ export const usePurchaseOrderForm = (
     const items = watch("items") || [];
     const current = items[index] || {};
 
-    // always override description/model/hsn from master…
     setValue(`items.${index}.description`, item.description || "");
     setValue(`items.${index}.modelNo`, item.model || item.modelNo || "");
     setValue(`items.${index}.hsn`, item.hsn || "");
 
-    // …but only override price/GST if they are empty/zero
     const currentUnitPrice = Number(current.unitPrice) || 0;
     const currentGstPercent = Number(current.gstPercent) || 0;
 
@@ -195,7 +178,6 @@ export const usePurchaseOrderForm = (
     setItemSuggestions((prev) => ({ ...prev, [index]: [] }));
   };
 
-  // ---------- MANAGER / SUPPLIER SUGGESTIONS ----------
   const [managerSuggestions, setManagerSuggestions] = useState([]);
   const [isManagerFocused, setIsManagerFocused] = useState(false);
   const managerWrapperRef = useRef(null);
@@ -249,7 +231,6 @@ export const usePurchaseOrderForm = (
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ---------- TOTALS ----------
   const items = watch("items") || [];
 
   const totals = useMemo(() => {
@@ -276,12 +257,10 @@ export const usePurchaseOrderForm = (
     };
   }, [items]);
 
-  // ---------- RESET ON EDIT CHANGE ----------
   useEffect(() => {
     if (!initialPurchaseOrder) return;
-    // when editing & data refetches, fully hydrate form from saved PO
     reset(buildDefaults(initialPurchaseOrder));
-  }, [initialPurchaseOrder, reset]); // cfg/initialCode are stable inside hook
+  }, [initialPurchaseOrder, reset]);
 
   return {
     register,

@@ -1,23 +1,29 @@
+// frontend/src/services/quotationApi.js
 import { baseApi } from "./baseApi";
 
 export const quotationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getQuotations: builder.query({
-      query: () => "/quotations",
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map((q) => ({ type: "Quotation", id: q._id })),
-              { type: "Quotation", id: "LIST" },
-            ]
-          : [{ type: "Quotation", id: "LIST" }],
+      // args can be { limit, companyCode, search }
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+
+        if (params.limit) searchParams.set("limit", params.limit);
+        if (params.companyCode) searchParams.set("companyCode", params.companyCode);
+        if (params.search) searchParams.set("search", params.search);
+
+        const qs = searchParams.toString();
+        return qs ? `/quotations?${qs}` : "/quotations";
+      },
+      providesTags: (result = []) => [
+        "Quotation",
+        ...result.map((q) => ({ type: "Quotation", id: q._id })),
+      ],
     }),
 
     getQuotation: builder.query({
       query: (id) => `/quotations/${id}`,
-      providesTags: (result, error, id) => [
-        { type: "Quotation", id },
-      ],
+      providesTags: (_res, _err, id) => [{ type: "Quotation", id }],
     }),
 
     createQuotation: builder.mutation({
@@ -26,7 +32,7 @@ export const quotationApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: [{ type: "Quotation", id: "LIST" }],
+      invalidatesTags: ["Quotation"],
     }),
 
     updateQuotation: builder.mutation({
@@ -35,9 +41,9 @@ export const quotationApi = baseApi.injectEndpoints({
         method: "PUT",
         body,
       }),
-      invalidatesTags: (result, error, { id }) => [
+      invalidatesTags: (_res, _err, { id }) => [
+        "Quotation",
         { type: "Quotation", id },
-        { type: "Quotation", id: "LIST" },
       ],
     }),
 
@@ -46,10 +52,7 @@ export const quotationApi = baseApi.injectEndpoints({
         url: `/quotations/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
-        { type: "Quotation", id },
-        { type: "Quotation", id: "LIST" },
-      ],
+      invalidatesTags: ["Quotation"],
     }),
   }),
 });

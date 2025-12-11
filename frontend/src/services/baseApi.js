@@ -1,10 +1,7 @@
-// frontend/src/services/baseApi.js
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const API_URL =
   import.meta.env.VITE_API_URL || "https://qupo-api.vercel.app/api";
-
-
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
@@ -19,7 +16,9 @@ const baseQuery = fetchBaseQuery({
           const parsed = JSON.parse(raw);
           token = parsed?.token;
         }
-      } catch {}
+      } catch {
+        // ignore JSON parse error
+      }
     }
 
     if (!token) {

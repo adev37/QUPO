@@ -4,12 +4,8 @@ import { NavLink, Outlet } from "react-router-dom";
 import { ROUTES } from "../../config/routesConfig";
 import { useAuth } from "../../hooks/useAuth";
 
-const navLinkBase =
-  "flex items-center px-3 py-2 rounded-md text-sm transition-colors";
-const navLinkInactive =
-  "text-slate-600 hover:bg-slate-100 hover:text-slate-900";
-const navLinkActive =
-  "bg-slate-900 text-slate-50 shadow-sm";
+const linkBase =
+  "flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150";
 
 const MainLayout = () => {
   const { user, logout } = useAuth();
@@ -19,163 +15,183 @@ const MainLayout = () => {
   const canPO = !!user?.canCreatePurchaseOrder || isAdmin;
 
   return (
-    <div className="min-h-screen flex bg-slate-100">
+    <div className="min-h-screen flex bg-slate-950">
       {/* SIDEBAR */}
-      <aside className="w-56 lg:w-64 bg-white border-r border-slate-200 flex flex-col">
+      <aside className="w-60 lg:w-64 bg-slate-950 text-slate-200 border-r border-slate-800 flex flex-col">
         {/* Brand */}
-        <div className="px-4 py-3 border-b border-slate-200">
-          <h1 className="text-sm font-semibold text-slate-900">
+        <div className="px-4 py-4 border-b border-slate-800">
+          <h1 className="text-sm font-semibold tracking-wide">
             Quotations &amp; POs
           </h1>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-slate-400">
             Business Documents Console
           </p>
         </div>
 
         {/* User info */}
         {user && (
-          <div className="px-4 py-3 border-b border-slate-200">
-            <p className="text-xs font-medium text-slate-800 truncate">
-              {user.name}
-            </p>
-            <p className="text-[11px] text-slate-500 truncate">
-              {user.email}
-            </p>
-            <p className="text-[11px] text-slate-500 capitalize">
+          <div className="px-4 py-3 border-b border-slate-800 text-xs">
+            <p className="font-semibold truncate">{user.name}</p>
+            <p className="text-slate-400 truncate">{user.email}</p>
+            <p className="text-slate-500 capitalize mt-0.5">
               Role: {user.role}
             </p>
           </div>
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 px-2 py-3 space-y-1 text-sm">
-          <NavLink
-            to={ROUTES.DASHBOARD}
-            className={({ isActive }) =>
-              [
-                navLinkBase,
-                isActive ? navLinkActive : navLinkInactive,
-              ].join(" ")
-            }
-          >
-            Dashboard
-          </NavLink>
-
-          <div className="mt-3 mb-1 text-[11px] font-semibold text-slate-500 uppercase tracking-wide px-3">
-            Masters
+        <nav className="flex-1 px-3 py-4 space-y-5 text-xs">
+          {/* OVERVIEW */}
+          <div>
+            <div className="px-1 mb-1 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+              Overview
+            </div>
+            <NavLink
+              to={ROUTES.DASHBOARD}
+              end
+              className={({ isActive }) =>
+                `${linkBase} ${
+                  isActive
+                    ? "bg-indigo-500 text-white shadow-sm"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                }`
+              }
+            >
+              Dashboard
+            </NavLink>
           </div>
 
-          <NavLink
-            to={ROUTES.ITEMS}
-            className={({ isActive }) =>
-              [
-                navLinkBase,
-                isActive ? navLinkActive : navLinkInactive,
-              ].join(" ")
-            }
-          >
-            Item Master
-          </NavLink>
+          {/* MASTERS */}
+          <div>
+            <div className="px-1 mb-1 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+              Masters
+            </div>
+            <div className="space-y-1">
+              <NavLink
+                to={ROUTES.ITEMS}
+                className={({ isActive }) =>
+                  `${linkBase} ${
+                    isActive
+                      ? "bg-indigo-500 text-white shadow-sm"
+                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  }`
+                }
+              >
+                Items
+              </NavLink>
 
-          <NavLink
-            to={ROUTES.COMPANIES}
-            className={({ isActive }) =>
-              [
-                navLinkBase,
-                isActive ? navLinkActive : navLinkInactive,
-              ].join(" ")
-            }
-          >
-            Companies
-          </NavLink>
+              <NavLink
+                to={ROUTES.COMPANIES}
+                className={({ isActive }) =>
+                  `${linkBase} ${
+                    isActive
+                      ? "bg-indigo-500 text-white shadow-sm"
+                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  }`
+                }
+              >
+                Companies
+              </NavLink>
 
-          <NavLink
-            to={ROUTES.CLIENTS}
-            className={({ isActive }) =>
-              [
-                navLinkBase,
-                isActive ? navLinkActive : navLinkInactive,
-              ].join(" ")
-            }
-          >
-            Clients
-          </NavLink>
+              <NavLink
+                to={ROUTES.CLIENTS}
+                className={({ isActive }) =>
+                  `${linkBase} ${
+                    isActive
+                      ? "bg-indigo-500 text-white shadow-sm"
+                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  }`
+                }
+              >
+                Clients
+              </NavLink>
 
-          <NavLink
-            to={ROUTES.SALES_MANAGERS}
-            className={({ isActive }) =>
-              [
-                navLinkBase,
-                isActive ? navLinkActive : navLinkInactive,
-              ].join(" ")
-            }
-          >
-            Sales Managers
-          </NavLink>
+              <NavLink
+                to={ROUTES.SALES_MANAGERS}
+                className={({ isActive }) =>
+                  `${linkBase} ${
+                    isActive
+                      ? "bg-indigo-500 text-white shadow-sm"
+                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  }`
+                }
+              >
+                Supplier/Sales Manager
+              </NavLink>
 
-          {isAdmin && (
-            <NavLink
-              to={ROUTES.USERS}
-              className={({ isActive }) =>
-                [
-                  navLinkBase,
-                  isActive ? navLinkActive : navLinkInactive,
-                ].join(" ")
-              }
-            >
-              Users
-            </NavLink>
-          )}
-
-          <div className="mt-3 mb-1 text-[11px] font-semibold text-slate-500 uppercase tracking-wide px-3">
-            Documents
+              {isAdmin && (
+                <NavLink
+                  to={ROUTES.USERS}
+                  className={({ isActive }) =>
+                    `${linkBase} ${
+                      isActive
+                        ? "bg-indigo-500 text-white shadow-sm"
+                        : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    }`
+                  }
+                >
+                  Users
+                </NavLink>
+              )}
+            </div>
           </div>
 
-          {/* Quotations visible only if allowed */}
-          {canQuotation && (
-            <NavLink
-              to={ROUTES.QUOTATIONS_LIST}
-              className={({ isActive }) =>
-                [
-                  navLinkBase,
-                  isActive ? navLinkActive : navLinkInactive,
-                ].join(" ")
-              }
-            >
-              Quotations
-            </NavLink>
-          )}
+          {/* TRANSACTIONS / DOCUMENTS */}
+          <div>
+            <div className="px-1 mb-1 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+              Transactions
+            </div>
+            <div className="space-y-1">
+              {canQuotation && (
+                <NavLink
+                  to={ROUTES.QUOTATIONS_LIST}
+                  className={({ isActive }) =>
+                    `${linkBase} ${
+                      isActive
+                        ? "bg-indigo-500 text-white shadow-sm"
+                        : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    }`
+                  }
+                >
+                  Quotations
+                </NavLink>
+              )}
 
-          {/* Purchase Orders visible only if allowed */}
-          {canPO && (
-            <NavLink
-              to={ROUTES.POS_LIST}
-              className={({ isActive }) =>
-                [
-                  navLinkBase,
-                  isActive ? navLinkActive : navLinkInactive,
-                ].join(" ")
-              }
-            >
-              Purchase Orders
-            </NavLink>
-          )}
+              {canPO && (
+                <NavLink
+                  to={ROUTES.POS_LIST}
+                  className={({ isActive }) =>
+                    `${linkBase} ${
+                      isActive
+                        ? "bg-indigo-500 text-white shadow-sm"
+                        : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                    }`
+                  }
+                >
+                  Purchase Orders
+                </NavLink>
+              )}
+            </div>
+          </div>
         </nav>
 
         {/* Footer / Logout */}
-        <div className="border-t border-slate-200 px-3 py-3 text-xs">
+        <div className="px-4 py-3 border-t border-slate-800 text-[11px] text-slate-500 space-y-2">
           <button
             type="button"
             onClick={logout}
-            className="w-full inline-flex items-center justify-center px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-100"
+            className="w-full inline-flex items-center justify-center px-3 py-1.5 rounded-md text-xs font-medium bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-700"
           >
             Logout
           </button>
+          <div className="text-[10px] text-slate-500">
+            © {new Date().getFullYear()} Q&amp;P System
+          </div>
         </div>
       </aside>
 
       {/* MAIN CONTENT */}
-      <main className="flex-1 min-h-screen">
+      <main className="flex-1 min-h-screen bg-slate-100">
         <div className="max-w-6xl mx-auto px-4 lg:px-6 py-4 lg:py-6">
           <Outlet />
         </div>

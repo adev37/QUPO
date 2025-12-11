@@ -1,27 +1,21 @@
+// frontend/src/pages/auth/LoginPage.jsx
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { useLoginMutation } from "../../services/authApi";
-import { setCredentials } from "../../app/store";
+import { useAuth } from "../../hooks/useAuth";
 
 const LoginPage = () => {
   const { register, handleSubmit } = useForm();
-  const [login, { isLoading }] = useLoginMutation();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const [loginMutation, { isLoading }] = useLoginMutation();
+  const { login } = useAuth(); // our auth helper
 
   const onSubmit = async (values) => {
     try {
-      const data = await login(values).unwrap();
-      const user = {
-        _id: data._id,
-        name: data.name,
-        email: data.email,
-        role: data.role,
-      };
-      dispatch(setCredentials({ user, token: data.token }));
-      navigate("/dashboard");
+      // data = { _id, name, email, role, canCreateQuotation, canCreatePurchaseOrder, token }
+      const data = await loginMutation(values).unwrap();
+
+      // store full user (with permissions) + token in Redux/localStorage
+      login(data);
     } catch (err) {
       console.error("Login failed", err);
       alert(
