@@ -1,17 +1,25 @@
+// frontend/src/pages/DashboardPage.jsx
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useGetQuotationsQuery } from "../services/quotationApi";
 import { useGetPurchaseOrdersQuery } from "../services/purchaseOrderApi";
 import Button from "../components/common/Button";
 import { ROUTES } from "../config/routesConfig";
+import { useAuth } from "../hooks/useAuth";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const { data: quotations = [], isLoading: loadingQ } =
     useGetQuotationsQuery();
   const { data: pos = [], isLoading: loadingP } =
     useGetPurchaseOrdersQuery();
+
+  const canQuotation =
+    !!user?.canCreateQuotation || user?.role === "admin";
+  const canPO =
+    !!user?.canCreatePurchaseOrder || user?.role === "admin";
 
   const totalQuotations = quotations.length;
   const totalPOs = pos.length;
@@ -34,14 +42,12 @@ const DashboardPage = () => {
     .slice(0, 5);
 
   const handleNewQuotation = () => {
-    // go to quotations list and ask it to open the company selector modal
     navigate(ROUTES.QUOTATIONS_LIST, {
       state: { openCompanySelector: true },
     });
   };
 
   const handleNewPO = () => {
-    // go to PO list and ask it to open the company selector modal
     navigate(ROUTES.POS_LIST, {
       state: { openCompanyModal: true },
     });
@@ -61,16 +67,20 @@ const DashboardPage = () => {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" onClick={handleNewQuotation}>
-            + New Quotation
-          </Button>
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={handleNewPO}
-          >
-            + New Purchase Order
-          </Button>
+          {canQuotation && (
+            <Button size="sm" onClick={handleNewQuotation}>
+              + New Quotation
+            </Button>
+          )}
+          {canPO && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleNewPO}
+            >
+              + New Purchase Order
+            </Button>
+          )}
         </div>
       </div>
 
@@ -168,7 +178,9 @@ const DashboardPage = () => {
                       <td className="py-1.5 px-2">
                         {q.date ? q.date.slice(0, 10) : "-"}
                       </td>
-                      <td className="py-1.5 px-2">{q.quotationNumber}</td>
+                      <td className="py-1.5 px-2">
+                        {q.quotationNumber}
+                      </td>
                       <td className="py-1.5 px-2">{q.clientName}</td>
                       <td className="py-1.5 px-2 truncate max-w-[140px]">
                         {q.subject}

@@ -1,3 +1,4 @@
+// backend/src/routes/quotationRoutes.js
 import express from "express";
 import {
   createQuotation,
@@ -14,7 +15,8 @@ const router = express.Router();
 // /api/quotations
 router
   .route("/")
-  .get(protect, getQuotations)
+  // ⬇ NOW ALSO REQUIRES canCreateQuotation TO VIEW THE LIST
+  .get(protect, requirePermission("canCreateQuotation"), getQuotations)
   .post(
     protect,
     requirePermission("canCreateQuotation"),
@@ -24,7 +26,12 @@ router
 // /api/quotations/:id
 router
   .route("/:id")
-  .get(protect, getQuotationById)
+  // ⬇ NOW ALSO REQUIRES canCreateQuotation TO VIEW SINGLE QUOTATION
+  .get(
+    protect,
+    requirePermission("canCreateQuotation"),
+    getQuotationById
+  )
   .put(
     protect,
     requirePermission("canCreateQuotation"),

@@ -5,10 +5,29 @@ import QuotationList from "../../components/quotations/QuotationList";
 import Button from "../../components/common/Button";
 import { ROUTES } from "../../config/routesConfig";
 import { COMPANY_CONFIGS } from "../../config/companyConfig";
+import { useAuth } from "../../hooks/useAuth";
 
 const QuotationsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+
+  const canQuotation =
+    !!user?.canCreateQuotation || user?.role === "admin";
+
+  // 🔒 page-level restriction
+  if (!user || !canQuotation) {
+    return (
+      <div className="space-y-2">
+        <h1 className="text-xl font-semibold mb-1">Quotations</h1>
+        <p className="text-sm text-red-600">
+          You do not have permission to view or create quotations. Please
+          contact your admin.
+        </p>
+      </div>
+    );
+  }
+
   const [showCompanySelector, setShowCompanySelector] = useState(false);
 
   // if we came from Dashboard with a request to open the selector

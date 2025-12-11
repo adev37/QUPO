@@ -1,5 +1,4 @@
 // backend/src/middleware/permissionMiddleware.js
-
 export const requirePermission = (permission) => (req, res, next) => {
   if (!req.user) {
     res.status(401);

@@ -1,8 +1,10 @@
+// frontend/src/pages/PurchaseOrders/PurchaseOrdersPage.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "../../config/routesConfig";
 import PurchaseOrderList from "../../components/purchaseOrders/PurchaseOrderList";
 import Button from "../../components/common/Button";
+import { useAuth } from "../../hooks/useAuth";
 
 const COMPANY_OPTIONS = [
   {
@@ -28,6 +30,24 @@ const COMPANY_OPTIONS = [
 const PurchaseOrdersPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+
+  const canPO =
+    !!user?.canCreatePurchaseOrder || user?.role === "admin";
+
+  // 🔒 page-level restriction
+  if (!user || !canPO) {
+    return (
+      <div className="space-y-2">
+        <h1 className="text-xl font-semibold mb-1">
+          Purchase Orders
+        </h1>
+        <p className="text-sm text-red-600">
+          You do not have permission to view or create purchase orders.
+        </p>
+      </div>
+    );
+  }
 
   const [showCompanyModal, setShowCompanyModal] = useState(false);
 

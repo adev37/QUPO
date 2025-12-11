@@ -1,3 +1,4 @@
+// backend/src/routes/purchaseOrderRoutes.js
 import express from "express";
 import {
   createPurchaseOrder,
@@ -14,7 +15,12 @@ const router = express.Router();
 // /api/purchase-orders
 router
   .route("/")
-  .get(protect, getPurchaseOrders)
+  // ⬇ NOW ALSO REQUIRES canCreatePurchaseOrder TO VIEW THE LIST
+  .get(
+    protect,
+    requirePermission("canCreatePurchaseOrder"),
+    getPurchaseOrders
+  )
   .post(
     protect,
     requirePermission("canCreatePurchaseOrder"),
@@ -24,7 +30,12 @@ router
 // /api/purchase-orders/:id
 router
   .route("/:id")
-  .get(protect, getPurchaseOrderById)
+  // ⬇ NOW ALSO REQUIRES canCreatePurchaseOrder TO VIEW SINGLE PO
+  .get(
+    protect,
+    requirePermission("canCreatePurchaseOrder"),
+    getPurchaseOrderById
+  )
   .put(
     protect,
     requirePermission("canCreatePurchaseOrder"),
