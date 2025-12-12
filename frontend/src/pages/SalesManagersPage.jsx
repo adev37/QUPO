@@ -1,4 +1,3 @@
-// frontend/src/pages/SalesManagersPage.jsx
 import { useState, useMemo, useEffect } from "react";
 import {
   useGetSalesManagersQuery,
@@ -21,6 +20,7 @@ function Modal({ isOpen, title, onClose, children }) {
           <button
             onClick={onClose}
             className="text-slate-500 hover:text-slate-700 text-xs"
+            aria-label="Close"
           >
             ✕
           </button>
@@ -68,8 +68,6 @@ function SalesManagerForm({ initialValues, onSubmit, onCancel, loading }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Only name required
     if (!form.name.trim()) return;
 
     onSubmit({
@@ -95,6 +93,7 @@ function SalesManagerForm({ initialValues, onSubmit, onCancel, loading }) {
             required
           />
         </div>
+
         <div>
           <label className="block text-xs font-medium text-slate-700 mb-1">
             Contact
@@ -107,6 +106,7 @@ function SalesManagerForm({ initialValues, onSubmit, onCancel, loading }) {
             placeholder="Phone / Mobile"
           />
         </div>
+
         <div>
           <label className="block text-xs font-medium text-slate-700 mb-1">
             Email
@@ -204,7 +204,8 @@ const SalesManagersPage = () => {
       (m) =>
         m.name?.toLowerCase().includes(term) ||
         m.email?.toLowerCase().includes(term) ||
-        m.contact?.toLowerCase().includes(term)
+        m.contact?.toLowerCase().includes(term) ||
+        m.gstin?.toLowerCase().includes(term)
     );
   }, [managers, search]);
 
@@ -260,18 +261,19 @@ const SalesManagersPage = () => {
   return (
     <div className="px-4 py-4 sm:px-6 sm:py-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-start sm:items-center justify-between gap-3 mb-4">
         <div>
           <h1 className="text-base font-semibold text-slate-800">
             Sales Managers
           </h1>
           <p className="text-xs text-slate-500">
-            Master for purchase orders & follow-ups.
+            Master for purchase orders &amp; follow-ups.
           </p>
         </div>
+
         <button
           onClick={openCreateModal}
-          className="inline-flex items-center px-3 py-1.5 rounded-md bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700"
+          className="shrink-0 inline-flex items-center px-3 py-1.5 rounded-md bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700"
         >
           + Add Supplier/Sales Manager
         </button>
@@ -295,7 +297,7 @@ const SalesManagersPage = () => {
         <div className="flex-1">
           <input
             type="text"
-            placeholder="Search by name, email, or contact..."
+            placeholder="Search by name, email, contact, GSTIN..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full border border-slate-300 rounded-md px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500"
@@ -306,8 +308,111 @@ const SalesManagersPage = () => {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+      {/* ✅ MOBILE CARDS (<sm) */}
+      <div className="sm:hidden space-y-3">
+        {isLoading ? (
+          <div className="text-xs text-slate-500">Loading sales managers...</div>
+        ) : pageItems.length === 0 ? (
+          <div className="text-xs text-slate-500">No sales managers found.</div>
+        ) : (
+          pageItems.map((m, index) => (
+            <div
+              key={m._id}
+              className="border border-slate-200 bg-white rounded-xl p-3 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="text-sm font-semibold text-slate-900">
+                    {m.name}
+                  </div>
+
+                  <div className="mt-1 flex flex-wrap gap-2 text-[11px] text-slate-600">
+                    <span className="inline-flex items-center rounded-full bg-indigo-50 text-indigo-700 px-2 py-0.5">
+                      #{startIndex + index + 1}
+                    </span>
+                    {m.gstin ? (
+                      <span className="inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2 py-0.5">
+                        GSTIN: {m.gstin}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2 py-0.5">
+                        GSTIN: -
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="text-right text-[11px] text-slate-600">
+                  <div className="text-slate-500">Contact</div>
+                  <div className="font-semibold text-slate-900">
+                    {m.contact || "-"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2 text-[11px]">
+                <div className="text-slate-500">Email</div>
+                <div className="text-right text-slate-800 font-medium break-all">
+                  {m.email || "-"}
+                </div>
+
+                <div className="text-slate-500">Address</div>
+                <div className="text-right text-slate-800 font-medium">
+                  {m.address || "-"}
+                </div>
+              </div>
+
+              <div className="mt-3 flex justify-end gap-3 text-[11px]">
+                <button
+                  onClick={() => openEditModal(m)}
+                  className="text-indigo-600 font-semibold hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(m)}
+                  disabled={isDeleting}
+                  className="text-red-600 font-semibold hover:underline disabled:opacity-60"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+
+        {/* Pagination (mobile) */}
+        <div className="px-3 py-2 border border-slate-200 rounded-lg bg-white flex items-center justify-between text-[11px] text-slate-600">
+          <div>
+            Showing{" "}
+            <span className="font-semibold">
+              {total === 0 ? 0 : startIndex + 1}-
+              {Math.min(startIndex + pageSize, total)}
+            </span>{" "}
+            of <span className="font-semibold">{total}</span>
+          </div>
+
+          <div className="space-x-1">
+            <button
+              disabled={safePage === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="px-2 py-1 border border-slate-300 rounded-md disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <button
+              disabled={safePage === totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="px-2 py-1 border border-slate-300 rounded-md disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ✅ TABLE (sm+) */}
+      <div className="hidden sm:block border border-slate-200 rounded-lg overflow-hidden bg-white">
         <div className="overflow-x-auto">
           <table className="min-w-full text-xs">
             <thead className="bg-slate-50 border-b border-slate-200">
@@ -335,6 +440,7 @@ const SalesManagersPage = () => {
                 </th>
               </tr>
             </thead>
+
             <tbody>
               {isLoading ? (
                 <tr>
@@ -363,13 +469,9 @@ const SalesManagersPage = () => {
                     <td className="px-3 py-2 text-slate-700">
                       {startIndex + index + 1}
                     </td>
-                    <td className="px-3 py-2 text-slate-800">
-                      {manager.name}
-                    </td>
+                    <td className="px-3 py-2 text-slate-800">{manager.name}</td>
                     <td className="px-3 py-2 text-slate-700 max-w-xs">
-                      <div className="line-clamp-2">
-                        {manager.address || "-"}
-                      </div>
+                      <div className="line-clamp-2">{manager.address || "-"}</div>
                     </td>
                     <td className="px-3 py-2 text-slate-700">
                       {manager.contact || "-"}
@@ -402,7 +504,7 @@ const SalesManagersPage = () => {
           </table>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination (desktop/tablet) */}
         <div className="px-3 py-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-600">
           <div>
             Showing{" "}
@@ -412,6 +514,7 @@ const SalesManagersPage = () => {
             </span>{" "}
             of <span className="font-semibold">{total}</span>
           </div>
+
           <div className="space-x-1">
             <button
               disabled={safePage === 1}
@@ -422,9 +525,7 @@ const SalesManagersPage = () => {
             </button>
             <button
               disabled={safePage === totalPages}
-              onClick={() =>
-                setPage((p) => Math.min(totalPages, p + 1))
-              }
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               className="px-2 py-1 border border-slate-300 rounded-md disabled:opacity-50"
             >
               Next

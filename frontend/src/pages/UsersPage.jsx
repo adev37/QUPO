@@ -17,9 +17,7 @@ const UsersPage = () => {
   if (!currentUser || currentUser.role !== "admin") {
     return (
       <div className="px-4 lg:px-6 py-4 lg:py-5">
-        <h1 className="text-base font-semibold text-slate-800 mb-2">
-          Users
-        </h1>
+        <h1 className="text-base font-semibold text-slate-800 mb-2">Users</h1>
         <p className="text-sm text-red-600">
           You don&apos;t have permission to view the Users page.
         </p>
@@ -166,7 +164,6 @@ const UsersPage = () => {
 
     try {
       await registerUser(createForm).unwrap();
-      // refresh list after creation
       await refetch();
       closeCreate();
     } catch (err) {
@@ -178,13 +175,11 @@ const UsersPage = () => {
   const isSaving = updating || deleting;
 
   return (
-    <div className="px-4 lg:px-6 py-4 lg:py-5">
+    <div className="px-4 py-4 sm:px-6 sm:py-6">
       {/* HEADER */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-base font-semibold text-slate-800">
-            Users
-          </h1>
+          <h1 className="text-base font-semibold text-slate-800">Users</h1>
           <p className="text-xs text-slate-500">
             Manage user roles and permissions for creating quotations and
             purchase orders.
@@ -227,8 +222,103 @@ const UsersPage = () => {
         </div>
       </div>
 
-      {/* TABLE */}
-      <div className="border border-slate-200 rounded-lg overflow-hidden bg-white">
+      {/* ================= MOBILE CARDS (<sm) ================= */}
+      <div className="sm:hidden space-y-3">
+        {isLoading ? (
+          <div className="text-xs text-slate-500">Loading users...</div>
+        ) : pageItems.length === 0 ? (
+          <div className="text-xs text-slate-500">No users found.</div>
+        ) : (
+          pageItems.map((u, idx) => (
+            <div
+              key={u._id}
+              className="border border-slate-200 bg-white rounded-xl p-3 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-slate-900 truncate">
+                    {u.name}
+                  </div>
+                  <div className="text-[11px] text-slate-600 break-all">
+                    {u.email}
+                  </div>
+
+                  <div className="mt-1 flex flex-wrap gap-2 text-[11px]">
+                    <span className="inline-flex items-center rounded-full bg-indigo-50 text-indigo-700 px-2 py-0.5">
+                      #{start + idx + 1}
+                    </span>
+                    <span className="inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2 py-0.5 capitalize">
+                      {u.role}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2 text-[11px]">
+                <div className="text-slate-500">Quotation</div>
+                <div className="text-right font-medium text-slate-800">
+                  {u.canCreateQuotation ? "Allowed" : "Not Allowed"}
+                </div>
+
+                <div className="text-slate-500">Purchase Order</div>
+                <div className="text-right font-medium text-slate-800">
+                  {u.canCreatePurchaseOrder ? "Allowed" : "Not Allowed"}
+                </div>
+              </div>
+
+              <div className="mt-3 flex justify-end gap-3 text-[11px]">
+                <button
+                  onClick={() => openEdit(u)}
+                  className="text-indigo-600 font-semibold hover:underline"
+                >
+                  Edit
+                </button>
+
+                {u._id !== currentUser._id && (
+                  <button
+                    onClick={() => handleDelete(u)}
+                    disabled={deleting}
+                    className="text-red-600 font-semibold hover:underline disabled:opacity-60"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+
+        {/* Pagination (mobile) */}
+        <div className="px-3 py-2 border border-slate-200 rounded-lg bg-white flex items-center justify-between text-[11px] text-slate-600">
+          <div>
+            Showing{" "}
+            <span className="font-semibold">
+              {total === 0 ? 0 : start + 1}-{Math.min(start + PAGE_SIZE, total)}
+            </span>{" "}
+            of <span className="font-semibold">{total}</span>
+          </div>
+
+          <div className="space-x-1">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="px-2 py-1 border border-slate-300 rounded-md disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="px-2 py-1 border border-slate-300 rounded-md disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ================= TABLE (sm+) ================= */}
+      <div className="hidden sm:block border border-slate-200 rounded-lg overflow-hidden bg-white">
         <div className="overflow-x-auto">
           <table className="min-w-full text-xs">
             <thead className="bg-slate-50 border-b border-slate-200">
@@ -256,6 +346,7 @@ const UsersPage = () => {
                 </th>
               </tr>
             </thead>
+
             <tbody>
               {isLoading ? (
                 <tr>
@@ -289,33 +380,11 @@ const UsersPage = () => {
                     <td className="px-3 py-2 text-slate-700 capitalize">
                       {u.role}
                     </td>
-                    <td className="px-3 py-2 text-center">
-                      <label className="inline-flex items-center gap-1 text-[11px] text-slate-700">
-                        <input
-                          type="checkbox"
-                          checked={!!u.canCreateQuotation}
-                          readOnly
-                          className="h-3 w-3"
-                        />
-                        <span>
-                          {u.canCreateQuotation ? "Allowed" : "Not Allowed"}
-                        </span>
-                      </label>
+                    <td className="px-3 py-2 text-center text-slate-700">
+                      {u.canCreateQuotation ? "Allowed" : "Not Allowed"}
                     </td>
-                    <td className="px-3 py-2 text-center">
-                      <label className="inline-flex items-center gap-1 text-[11px] text-slate-700">
-                        <input
-                          type="checkbox"
-                          checked={!!u.canCreatePurchaseOrder}
-                          readOnly
-                          className="h-3 w-3"
-                        />
-                        <span>
-                          {u.canCreatePurchaseOrder
-                            ? "Allowed"
-                            : "Not Allowed"}
-                        </span>
-                      </label>
+                    <td className="px-3 py-2 text-center text-slate-700">
+                      {u.canCreatePurchaseOrder ? "Allowed" : "Not Allowed"}
                     </td>
                     <td className="px-3 py-2 text-right whitespace-nowrap">
                       <button
@@ -341,13 +410,12 @@ const UsersPage = () => {
           </table>
         </div>
 
-        {/* FOOTER / PAGINATION */}
+        {/* FOOTER / PAGINATION (desktop) */}
         <div className="px-3 py-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-600">
           <div>
             Showing{" "}
             <span className="font-semibold">
-              {total === 0 ? 0 : start + 1}-
-              {Math.min(start + PAGE_SIZE, total)}
+              {total === 0 ? 0 : start + 1}-{Math.min(start + PAGE_SIZE, total)}
             </span>{" "}
             of <span className="font-semibold">{total}</span>
           </div>
@@ -373,7 +441,7 @@ const UsersPage = () => {
       {/* EDIT USER MODAL */}
       {editing && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md border border-slate-200 px-4 py-4 text-xs">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md border border-slate-200 mx-3 px-4 py-4 text-xs">
             <h2 className="text-sm font-semibold text-slate-800 mb-2">
               Edit User – {editing.email}
             </h2>
@@ -440,8 +508,7 @@ const UsersPage = () => {
                     className="h-3 w-3"
                   />
                   <span className="text-[11px] text-slate-700">
-                    Allow this user to create{" "}
-                    <strong>Purchase Orders</strong>
+                    Allow this user to create <strong>Purchase Orders</strong>
                   </span>
                 </label>
               </div>
@@ -476,7 +543,7 @@ const UsersPage = () => {
       {/* CREATE USER MODAL */}
       {isCreateOpen && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md border border-slate-200 px-4 py-4 text-xs">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md border border-slate-200 mx-3 px-4 py-4 text-xs">
             <h2 className="text-sm font-semibold text-slate-800 mb-2">
               Create New User
             </h2>
